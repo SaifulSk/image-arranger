@@ -27,8 +27,8 @@ function ImageArranger() {
     const cropperInstance = cropperRefs.current[index]?.cropper;
     if (cropperInstance) {
       const canvas = cropperInstance.getCroppedCanvas({
-        width: 300,
-        height: 400,
+        width: 300 * 2,
+        height: 400 * 2,
       });
 
       if (canvas) {
@@ -46,45 +46,94 @@ function ImageArranger() {
     }
   };
 
-  const generatePdf = () => {
+  const generatePdf = async () => {
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = 210;
     const pageHeight = 297;
-    const imgWidth = 29;
-    const imgHeight = 39;
-    const borderPadding = 0.5; // Padding for border
-    let x = 0.5;
-    let y = 0.5;
+    const imgWidth = 39;
+    const imgHeight = 29;
+    const borderPadding = 0.25; // Padding for border
+    let x = 3;
+    let y = 3;
+    let c = 0;
 
     images.forEach((image, index) => {
       const copiesCount = copies[index] || 1;
       for (let i = 0; i < copiesCount; i++) {
+        c++;
         const imgSrc = croppedImages[index] || image.url;
-        // Draw the border
-        pdf.setDrawColor(0, 0, 0); // Black border
-        pdf.rect(
-          x,
-          y,
-          imgWidth + borderPadding * 2,
-          imgHeight + borderPadding * 2
-        );
-        // Add the image inside the border
-        pdf.addImage(
-          imgSrc,
-          "JPEG",
-          x + borderPadding,
-          y + borderPadding,
-          imgWidth,
-          imgHeight
-        );
-        x += imgWidth + borderPadding * 2 + 1.5;
-        if (x + imgWidth + borderPadding * 2 > pageWidth) {
-          x = 0.5;
-          y += imgHeight + borderPadding * 2 + 1.5;
-          if (y + imgHeight + borderPadding * 2 > pageHeight) {
-            pdf.addPage();
-            x = 0.5;
-            y = 0.5;
+        if (c > 40) {
+          if (c == 46) {
+            c = 0;
+          }
+          // Draw the border
+          pdf.setDrawColor(0, 0, 0); // Black border
+          pdf.rect(
+            x,
+            y,
+            imgHeight + borderPadding * 2,
+            imgWidth + borderPadding * 2
+          );
+          // Add the image inside the border
+          pdf.addImage(
+            imgSrc,
+            "JPEG",
+            x + borderPadding,
+            y + borderPadding,
+            imgHeight,
+            imgWidth
+            // x + imgWidth + borderPadding,
+            // y + imgHeight - imgWidth + borderPadding,
+            // imgHeight,
+            // imgWidth,
+            // null,
+            // null,
+            // 90
+          );
+          x += imgHeight + borderPadding * 2 + 1.5;
+          if (x + imgHeight + borderPadding * 2 > pageWidth) {
+            x = 3;
+            y += imgWidth + borderPadding * 2 + 1.5;
+            if (y + imgWidth + borderPadding * 2 > pageHeight) {
+              pdf.addPage();
+              x = 3;
+              y = 3;
+            }
+          }
+        } else {
+          // Draw the border
+          pdf.setDrawColor(0, 0, 0); // Black border
+          pdf.rect(
+            x,
+            y,
+            imgWidth + borderPadding * 2,
+            imgHeight + borderPadding * 2
+          );
+          // Add the image inside the border
+          pdf.addImage(
+            imgSrc,
+            "JPEG",
+            // x + borderPadding,
+            // y + borderPadding,
+            // imgWidth,
+            // imgHeight
+            x + imgWidth + borderPadding,
+            y + imgHeight - imgWidth + borderPadding,
+            imgHeight,
+            imgWidth,
+            null,
+            null,
+            90
+          );
+          x += imgWidth + borderPadding * 2 + 1.5;
+          if (x + imgWidth + borderPadding * 2 > pageWidth) {
+            x = 3;
+            y += imgHeight + borderPadding * 2 + 1.5;
+            if (y + imgHeight + borderPadding * 2 > pageHeight) {
+              pdf.addPage();
+              x = 3;
+              y = 3;
+            }
           }
         }
       }
@@ -124,10 +173,10 @@ function ImageArranger() {
           <div key={index} className="imageContainer">
             <Cropper
               src={image.url}
-              style={{ height: 200, width: "100%" }}
+              style={{ height: 500, width: "100%" }}
               initialAspectRatio={3 / 4}
               aspectRatio={3 / 4}
-              guides={false} // Hide guides
+              guides={true} // Hide guides
               background={false} // Hide background outside the crop area
               viewMode={1} // Ensure only the image is visible
               crop={() => handleCropChange(index)}
@@ -142,8 +191,8 @@ function ImageArranger() {
               className="dropdown"
             >
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                <option key={n} value={n}>
-                  {n}
+                <option key={n * 5} value={n * 5}>
+                  {n * 5}
                 </option>
               ))}
             </select>
