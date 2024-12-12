@@ -162,13 +162,13 @@ function Project() {
           Download PDF
         </button>
       )}
-      <div className="imagePreviewContainer">
+      <div className="imagePreviewContainerProject">
         {images.map((image, index) => (
           <img
             key={index}
             src={URL.createObjectURL(image)}
             alt={`Image ${index + 1}`}
-            className="imagePreview"
+            className="imagePreviewProject"
           />
         ))}
       </div>
