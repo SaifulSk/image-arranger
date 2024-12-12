@@ -5,6 +5,7 @@ import "cropperjs/dist/cropper.css";
 import "./ImageArranger.css";
 import { useSearchParams } from "react-router-dom";
 import Passport from "./Passport";
+import Project from "./Project";
 
 function ImageArranger() {
   const [searchParams] = useSearchParams();
@@ -17,7 +18,7 @@ function ImageArranger() {
       {searchParams?.get("type") == "passport" ? (
         <Passport />
       ) : searchParams?.get("type") == "project" ? (
-        <></>
+        <Project />
       ) : (
         <div className="container">
           <h1 className="heading">Image Arranger</h1>
