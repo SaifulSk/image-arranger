@@ -2,6 +2,7 @@
   "name": "image-arranger",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://saifulsk.github.io/image-arranger",
   "dependencies": {
     "@react-pdf/renderer": "^4.0.0",
     "@testing-library/jest-dom": "^5.17.0",
@@ -13,14 +14,18 @@
     "react-cropper": "^2.3.3",
     "react-dom": "^18.3.1",
     "react-easy-crop": "^5.1.0",
+    "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
+    "react-toastify": "^10.0.6",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -39,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.2.0"
   }
 }

@@ -1,10 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
 import ImageArranger from "./ImageArranger";
 
 ReactDOM.render(
   <React.StrictMode>
-    <ImageArranger />
+    <BrowserRouter>
+      <ImageArranger />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );

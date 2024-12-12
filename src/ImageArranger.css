@@ -54,3 +54,22 @@
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+.copies-input {
+  margin: 10px;
+  width: 50px;
+  border-radius: 30px;
+  height: 30px;
+  text-align: center;
+  border: #4caf50 solid;
+}
+
+.copies-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-preview {
+  background-color: #237ed7;
+}
