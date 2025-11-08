@@ -6,6 +6,7 @@ import "./ImageArranger.css";
 import { useSearchParams } from "react-router-dom";
 import Passport from "./Passport";
 import Project from "./Project";
+import SirPhoto from "./SirPhoto";
 
 function ImageArranger() {
   const [searchParams] = useSearchParams();
