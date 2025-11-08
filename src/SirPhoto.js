@@ -62,7 +62,7 @@ function SirPhoto() {
     const imgWidth = 39;
     const imgHeight = 29;
     const borderPadding = 0.25; // Padding for border
-    let x = 3;
+    let x = 5;
     let y = 3;
     let c = 0;
 
@@ -71,78 +71,31 @@ function SirPhoto() {
       for (let i = 0; i < copiesCount; i++) {
         c++;
         const imgSrc = croppedImages[index] || image.url;
-        if (c > 40) {
-          if (c == 46) {
-            c = 0;
-          }
-          // Draw the border
-          pdf.setDrawColor(0, 0, 0); // Black border
-          pdf.rect(
-            x,
-            y,
-            imgHeight + borderPadding * 2,
-            imgWidth + borderPadding * 2
-          );
-          // Add the image inside the border
-          pdf.addImage(
-            imgSrc,
-            "JPEG",
-            x + borderPadding,
-            y + borderPadding,
-            imgHeight,
-            imgWidth
-            // x + imgWidth + borderPadding,
-            // y + imgHeight - imgWidth + borderPadding,
-            // imgHeight,
-            // imgWidth,
-            // null,
-            // null,
-            // 90
-          );
-          x += imgHeight + borderPadding * 2 + 1.5;
-          if (x + imgHeight + borderPadding * 2 > pageWidth) {
-            x = 3;
-            y += imgWidth + borderPadding * 2 + 1.5;
-            if (y + imgWidth + borderPadding * 2 > pageHeight) {
-              pdf.addPage();
-              x = 3;
-              y = 3;
-            }
-          }
-        } else {
-          // Draw the border
-          pdf.setDrawColor(0, 0, 0); // Black border
-          pdf.rect(
-            x,
-            y,
-            imgWidth + borderPadding * 2,
-            imgHeight + borderPadding * 2
-          );
-          // Add the image inside the border
-          pdf.addImage(
-            imgSrc,
-            "JPEG",
-            // x + borderPadding,
-            // y + borderPadding,
-            // imgWidth,
-            // imgHeight
-            x + imgWidth + borderPadding,
-            y + imgHeight - imgWidth + borderPadding,
-            imgHeight,
-            imgWidth,
-            null,
-            null,
-            90
-          );
-          x += imgWidth + borderPadding * 2 + 1.5;
-          if (x + imgWidth + borderPadding * 2 > pageWidth) {
-            x = 3;
-            y += imgHeight + borderPadding * 2 + 1.5;
-            if (y + imgHeight + borderPadding * 2 > pageHeight) {
-              pdf.addPage();
-              x = 3;
-              y = 3;
-            }
+        // Draw the border
+        pdf.setDrawColor(0, 0, 0); // Black border
+        pdf.rect(
+          x,
+          y,
+          imgHeight + borderPadding * 2,
+          imgWidth + borderPadding * 2
+        );
+        // Add the image inside the border
+        pdf.addImage(
+          imgSrc,
+          "JPEG",
+          x + borderPadding,
+          y + borderPadding,
+          imgHeight,
+          imgWidth
+        );
+        x += imgHeight + borderPadding * 2 + 3;
+        if (x + imgHeight + borderPadding * 2 > pageWidth) {
+          x = 5;
+          y += imgWidth + borderPadding * 2 + 2;
+          if (y + imgWidth + borderPadding * 2 > pageHeight) {
+            pdf.addPage();
+            x = 5;
+            y = 3;
           }
         }
       }
@@ -185,16 +138,6 @@ function SirPhoto() {
           Preview PDF
         </button>
       )}
-
-      {/* {pdfUrl && (
-        <iframe
-          src={pdfUrl}
-          width="100%"
-          height="600px"
-          title="Google PDF Viewer"
-        ></iframe>
-      )} */}
-
       <div className="imagePreviewContainer">
         {images.map((image, index) => (
           <div key={index} className="imageContainer">
@@ -218,23 +161,12 @@ function SirPhoto() {
                 id={`copies-${index}`}
                 max={50}
                 maxLength={2}
-                defaultValue={5}
+                defaultValue={6}
                 onChange={(e) => handleCopiesChange(index, e.target.value)}
                 // placeholder="Enter no of copies"
                 className="copies-input"
               />
             </div>
-            {/* <select
-              id={`copies-${index}`}
-              onChange={(e) => handleCopiesChange(index, e.target.value)}
-              className="dropdown"
-            >
-              {[1, 5, 10, 15, 20, 25, 30, 35, 40, 46].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select> */}
           </div>
         ))}
       </div>
