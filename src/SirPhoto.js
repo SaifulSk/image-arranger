@@ -62,7 +62,7 @@ function SirPhoto() {
     const imgWidth = 39;
     const imgHeight = 29;
     const borderPadding = 0.25; // Padding for border
-    let x = 5;
+    let x = 3;
     let y = 3;
     let c = 0;
 
@@ -90,11 +90,11 @@ function SirPhoto() {
         );
         x += imgHeight + borderPadding * 2 + 3;
         if (x + imgHeight + borderPadding * 2 > pageWidth) {
-          x = 5;
+          x = 3;
           y += imgWidth + borderPadding * 2 + 2;
           if (y + imgWidth + borderPadding * 2 > pageHeight) {
             pdf.addPage();
-            x = 5;
+            x = 3;
             y = 3;
           }
         }
