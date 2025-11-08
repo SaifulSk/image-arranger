@@ -19,6 +19,8 @@ function ImageArranger() {
         <Passport />
       ) : searchParams?.get("type") == "project" ? (
         <Project />
+      ) : searchParams?.get("type") == "sirphoto" ? (
+        <SirPhoto />
       ) : (
         <div className="container">
           <h1 className="heading">Image Arranger</h1>

@@ -5,7 +5,7 @@ import "cropperjs/dist/cropper.css";
 import "./ImageArranger.css";
 import { useSearchParams } from "react-router-dom";
 
-function Passport() {
+function SirPhoto() {
   const [images, setImages] = useState([]);
   const [pdf, setPdf] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -242,4 +242,4 @@ function Passport() {
   );
 }
 
-export default Passport;
+export default SirPhoto;
