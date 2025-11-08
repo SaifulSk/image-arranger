@@ -161,7 +161,7 @@ function SirPhoto() {
                 id={`copies-${index}`}
                 max={50}
                 maxLength={2}
-                defaultValue={6}
+                // defaultValue={3}
                 onChange={(e) => handleCopiesChange(index, e.target.value)}
                 // placeholder="Enter no of copies"
                 className="copies-input"

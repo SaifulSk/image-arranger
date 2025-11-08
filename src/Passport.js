@@ -218,7 +218,7 @@ function Passport() {
                 id={`copies-${index}`}
                 max={50}
                 maxLength={2}
-                defaultValue={5}
+                // defaultValue={5}
                 onChange={(e) => handleCopiesChange(index, e.target.value)}
                 // placeholder="Enter no of copies"
                 className="copies-input"
