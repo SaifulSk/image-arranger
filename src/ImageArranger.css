@@ -14,6 +14,40 @@
   font-family: Arial, sans-serif;
 }
 
+.nav-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #f8f9f9;
+  border-radius: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 25px;
+  background-color: #fff;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nav-button:hover {
+  background-color: #237ed7;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.nav-button.active {
+  background-color: #237ed7;
+  color: white;
+}
+
 .heading {
   color: #333;
   font-size: 24px;

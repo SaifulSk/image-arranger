@@ -168,7 +168,7 @@ function Passport() {
 
   return (
     <div className="container">
-      <h1 className="heading">Image Arranger (L)</h1>
+      <h1 className="heading">Landscape Image Arranger</h1>
       <input
         type="file"
         multiple

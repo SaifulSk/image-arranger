@@ -9,19 +9,54 @@ import Project from "./Project";
 import SirPhoto from "./SirPhoto";
 
 function ImageArranger() {
-  const [searchParams] = useSearchParams();
+  const [searchParamsInit] = useSearchParams();
+  const [searchParams, setSearchParams] = useState(
+    searchParamsInit?.get("type")
+  );
 
   useEffect(() => {
-    console.log(searchParams.get("type"));
+    console.log(searchParams);
   }, [searchParams]);
   return (
     <>
-      {searchParams?.get("type") == "passport" ? (
-        <Passport />
-      ) : searchParams?.get("type") == "project" ? (
-        <Project />
-      ) : searchParams?.get("type") == "sirphoto" ? (
-        <SirPhoto />
+      {searchParams ? (
+        <div className="container">
+          <div className="nav-buttons">
+            <button
+              className={`nav-button ${
+                searchParams === "passport" ? "active" : ""
+              }`}
+              onClick={() => setSearchParams("passport")}
+            >
+              Landscape
+            </button>
+            <button
+              className={`nav-button ${
+                searchParams === "sirphoto" ? "active" : ""
+              }`}
+              onClick={() => setSearchParams("sirphoto")}
+            >
+              Portrait
+            </button>
+            <button
+              className={`nav-button ${
+                searchParams === "project" ? "active" : ""
+              }`}
+              onClick={() => setSearchParams("project")}
+            >
+              Project
+            </button>
+          </div>
+          <div className="content-area">
+            {searchParams === "passport" ? (
+              <Passport />
+            ) : searchParams === "project" ? (
+              <Project />
+            ) : searchParams === "sirphoto" ? (
+              <SirPhoto />
+            ) : null}
+          </div>
+        </div>
       ) : (
         <div className="container">
           <h1 className="heading">Image Arranger</h1>

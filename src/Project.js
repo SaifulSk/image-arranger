@@ -130,7 +130,7 @@ function Project() {
 
   return (
     <div className="container">
-      <h1 className="heading">Image Arranger</h1>
+      <h1 className="heading">Project Photos Arranger</h1>
       <input
         type="file"
         multiple

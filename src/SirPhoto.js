@@ -121,7 +121,7 @@ function SirPhoto() {
 
   return (
     <div className="container">
-      <h1 className="heading">Image Arranger (P)</h1>
+      <h1 className="heading">Portrait Image Arranger</h1>
       <input
         type="file"
         multiple
