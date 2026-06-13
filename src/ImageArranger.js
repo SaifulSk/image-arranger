@@ -13,12 +13,31 @@ function ImageArranger() {
   const [searchParams, setSearchParams] = useState(
     searchParamsInit?.get("type")
   );
+  const [theme, setTheme] = useState("dark");
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => prevTheme === "dark" ? "light" : "dark");
+  };
 
   useEffect(() => {
     console.log(searchParams);
   }, [searchParams]);
+
   return (
     <>
+      <div className="theme-toggle">
+        <button 
+          onClick={toggleTheme} 
+          className="button" 
+          style={{ padding: '8px 16px', borderRadius: '20px', fontSize: '14px', background: 'var(--surface-color)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', boxShadow: 'var(--glass-shadow)' }}
+        >
+          {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        </button>
+      </div>
       {searchParams ? (
         <div className="container">
           <div className="nav-buttons">
@@ -60,14 +79,19 @@ function ImageArranger() {
       ) : (
         <div className="container">
           <h1 className="heading">Image Arranger</h1>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={() => {}}
-            className="fileInput"
-          />
-
+          <div className="controls-row">
+            <input
+              type="file"
+              id="initial-upload"
+              multiple
+              accept="image/*"
+              onChange={() => {}}
+              className="fileInput"
+            />
+            <label htmlFor="initial-upload" className="upload-label">
+              <span style={{marginRight: '8px'}}>📸</span> Upload Photos
+            </label>
+          </div>
           <button className="button">Generate PDF</button>
         </div>
       )}

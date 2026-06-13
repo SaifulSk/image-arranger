@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { jsPDF } from "jspdf";
+import Cropper from "react-cropper";
+import "cropperjs/dist/cropper.css";
 import "./ImageArranger.css"; // Import the CSS file
 
 function Project() {
@@ -7,16 +9,69 @@ function Project() {
   const [pdf, setPdf] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [croppedImages, setCroppedImages] = useState({});
+  const [activeCropIndices, setActiveCropIndices] = useState({});
+  const cropperRefs = useRef({});
 
   const handleImageUpload = (event) => {
-    setImages([...images, ...event.target.files]);
+    const uploadedImages = Array.from(event.target.files).map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+    setImages([...images, ...uploadedImages]);
     setPdf(null);
     setPdfUrl(null);
   };
 
+  const handleRemoveImage = (indexToRemove) => {
+    setImages(images.filter((_, index) => index !== indexToRemove));
+    
+    const newCropped = {};
+    const newActive = {};
+    let newIdx = 0;
+    images.forEach((_, oldIdx) => {
+      if (oldIdx !== indexToRemove) {
+         if (croppedImages[oldIdx] !== undefined) newCropped[newIdx] = croppedImages[oldIdx];
+         if (activeCropIndices[oldIdx] !== undefined) newActive[newIdx] = activeCropIndices[oldIdx];
+         newIdx++;
+      }
+    });
+    setCroppedImages(newCropped);
+    setActiveCropIndices(newActive);
+    setPdf(null);
+    setPdfUrl(null);
+  };
+
+  const toggleCropMode = (index) => {
+    if (activeCropIndices[index]) {
+      // We are closing the cropper. Get the final crop image.
+      const cropperInstance = cropperRefs.current[index]?.cropper;
+      if (cropperInstance) {
+        const canvas = cropperInstance.getCroppedCanvas();
+        if (canvas) {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const croppedUrl = URL.createObjectURL(blob);
+              setCroppedImages((prevState) => {
+                // Free previous blob URL memory to prevent memory leak
+                if (prevState[index]) URL.revokeObjectURL(prevState[index]);
+                return { ...prevState, [index]: croppedUrl };
+              });
+            }
+          }, "image/jpeg", 0.95);
+        }
+      }
+    }
+
+    setActiveCropIndices((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
   const loadImages = () => {
     return Promise.all(
-      images.map((image) => {
+      images.map((image, index) => {
         return new Promise((resolve) => {
           const img = new Image();
           img.onload = () => {
@@ -44,14 +99,14 @@ function Project() {
             }
 
             resolve({
-              imageFile: image,
+              imageFile: image.file,
               imgElement: imgElement,
               width: width,
               height: height,
               isSquare: isAlmostSquare,
             });
           };
-          img.src = URL.createObjectURL(image);
+          img.src = croppedImages[index] || image.url;
         });
       })
     );
@@ -139,35 +194,81 @@ function Project() {
   return (
     <div className="container">
       <h1 className="heading">Project Photos Arranger</h1>
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={handleImageUpload}
-        className="fileInput"
-      />
+      
+      <div className="controls-row">
+        <input
+          type="file"
+          id="project-upload"
+          multiple
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="fileInput"
+        />
+        <label htmlFor="project-upload" className="upload-label">
+          <span style={{marginRight: '8px'}}>📸</span> Upload Photos
+        </label>
+      </div>
 
-      <button
-        onClick={generatePdf}
-        className="button"
-        disabled={isGenerating || images.length === 0}
-      >
-        {isGenerating ? "Generating..." : "Generate PDF"}
-      </button>
-      {pdfUrl && (
-        <button onClick={downloadPdf} className="button btn-preview">
-          Preview PDF
+      <div className="controls-row desktop-actions action-buttons">
+        <button onClick={generatePdf} className="button" disabled={isGenerating || images.length === 0}>
+          {isGenerating ? "Generating..." : "Generate PDF"}
         </button>
-      )}
+        {pdf && (
+          <button onClick={downloadPdf} className="button btn-preview">
+            Preview PDF
+          </button>
+        )}
+      </div>
+
       <div className="imagePreviewContainerProject">
         {images.map((image, index) => (
-          <img
-            key={index}
-            src={URL.createObjectURL(image)}
-            alt={`Preview ${index + 1}`}
-            className="imagePreviewProject"
-          />
+          <div key={index} className="imageContainer" style={{ position: "relative" }}>
+            <button
+              onClick={() => handleRemoveImage(index)}
+              className="btn-remove"
+              title="Remove image"
+            >
+              &times;
+            </button>
+            <button
+              onClick={() => toggleCropMode(index)}
+              className="btn-crop"
+              title={activeCropIndices[index] ? "Done cropping" : "Crop image"}
+            >
+              {activeCropIndices[index] ? "✔️" : "✂️"}
+            </button>
+            {activeCropIndices[index] ? (
+              <Cropper
+                src={image.url}
+                style={{ height: 300, width: "100%" }}
+                aspectRatio={NaN} // Freesize crop
+                autoCropArea={1}
+                guides={true}
+                background={false}
+                viewMode={1}
+                ref={(ref) => (cropperRefs.current[index] = ref)}
+              />
+            ) : (
+              <img
+                src={croppedImages[index] || image.url}
+                alt={`Preview ${index + 1}`}
+                className="imagePreviewProject"
+                style={{ margin: 0, height: 300, width: "100%", objectFit: "contain" }}
+              />
+            )}
+          </div>
         ))}
+      </div>
+
+      <div className="mobile-actions action-buttons">
+        <button onClick={generatePdf} className="button" disabled={isGenerating || images.length === 0}>
+          {isGenerating ? "Generating..." : "Generate PDF"}
+        </button>
+        {pdf && (
+          <button onClick={downloadPdf} className="button btn-preview">
+            Preview PDF
+          </button>
+        )}
       </div>
     </div>
   );

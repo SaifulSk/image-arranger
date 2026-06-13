@@ -11,6 +11,7 @@ function SirPhoto() {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [copies, setCopies] = useState({});
   const [croppedImages, setCroppedImages] = useState({});
+  const [imageSize, setImageSize] = useState("3x4");
   const cropperRefs = useRef({});
   const [searchParams] = useSearchParams();
 
@@ -28,6 +29,32 @@ function SirPhoto() {
     setPdf(null);
     setPdfUrl(null);
     setCopies({ ...copies, [index]: Number(value) });
+  };
+
+  const handleSizeChange = (e) => {
+    setImageSize(e.target.value);
+    setPdf(null);
+    setPdfUrl(null);
+    setCroppedImages({}); // Invalidate cropped images as aspect ratio changed
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setImages(images.filter((_, index) => index !== indexToRemove));
+    
+    const newCopies = {};
+    const newCropped = {};
+    let newIdx = 0;
+    images.forEach((_, oldIdx) => {
+      if (oldIdx !== indexToRemove) {
+         if (copies[oldIdx] !== undefined) newCopies[newIdx] = copies[oldIdx];
+         if (croppedImages[oldIdx] !== undefined) newCropped[newIdx] = croppedImages[oldIdx];
+         newIdx++;
+      }
+    });
+    setCopies(newCopies);
+    setCroppedImages(newCropped);
+    setPdf(null);
+    setPdfUrl(null);
   };
 
   const handleCropChange = (index) => {
@@ -59,8 +86,8 @@ function SirPhoto() {
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = 210;
     const pageHeight = 297;
-    const imgWidth = 39;
-    const imgHeight = 29;
+    const imgWidth = imageSize === "3x4" ? 39 : 45;
+    const imgHeight = imageSize === "3x4" ? 29 : 35;
     const borderPadding = 0.25; // Padding for border
     let x = 3;
     let y = 3;
@@ -122,30 +149,58 @@ function SirPhoto() {
   return (
     <div className="container">
       <h1 className="heading">Portrait Image Arranger</h1>
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={handleImageUpload}
-        className="fileInput"
-      />
+      
+      <div className="sticky-bottom-bar" style={{ width: "100%" }}>
+        <div className="controls-row">
+          <input
+            type="file"
+            id="sirphoto-upload"
+            multiple
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="fileInput"
+          />
+          <label htmlFor="sirphoto-upload" className="upload-label">
+            <span style={{marginRight: '8px'}}>📸</span> Upload Photos
+          </label>
+        </div>
 
-      <button onClick={generatePdf} className="button">
-        Generate PDF
-      </button>
-      {pdf && (
-        <button onClick={downloadPdf} className="button btn-preview">
-          Preview PDF
-        </button>
-      )}
+        <div className="controls-row">
+        <div className="size-selector">
+          <label className="label">Image Size:</label>
+          <select value={imageSize} onChange={handleSizeChange} className="dropdown">
+            <option value="3x4">3x4 cm</option>
+            <option value="3.5x4.5">3.5x4.5 cm</option>
+          </select>
+        </div>
+
+        <div className="desktop-actions action-buttons">
+          <button onClick={generatePdf} className="button" disabled={images.length === 0}>
+            Generate PDF
+          </button>
+          {pdf && (
+            <button onClick={downloadPdf} className="button btn-preview">
+              Preview PDF
+            </button>
+          )}
+        </div>
+      </div>
+      </div>
       <div className="imagePreviewContainer">
         {images.map((image, index) => (
-          <div key={index} className="imageContainer">
+          <div key={index} className="imageContainer" style={{ position: "relative" }}>
+            <button
+              onClick={() => handleRemoveImage(index)}
+              className="btn-remove"
+              title="Remove image"
+            >
+              &times;
+            </button>
             <Cropper
               src={image.url}
-              style={{ height: 500, width: "100%" }}
-              initialAspectRatio={3 / 4}
-              aspectRatio={3 / 4}
+              style={{ height: 300, width: "100%" }}
+              initialAspectRatio={imageSize === "3x4" ? 29 / 39 : 35 / 45}
+              aspectRatio={imageSize === "3x4" ? 29 / 39 : 35 / 45}
               guides={true} // Hide guides
               background={false} // Hide background outside the crop area
               viewMode={1} // Ensure only the image is visible
@@ -169,6 +224,17 @@ function SirPhoto() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mobile-actions action-buttons">
+        <button onClick={generatePdf} className="button" disabled={images.length === 0}>
+          Generate PDF
+        </button>
+        {pdf && (
+          <button onClick={downloadPdf} className="button btn-preview">
+            Preview PDF
+          </button>
+        )}
       </div>
     </div>
   );
