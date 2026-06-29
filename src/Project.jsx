@@ -69,6 +69,33 @@ function Project() {
     }));
   };
 
+  const confirmAllCrops = () => {
+    const activeIndices = Object.keys(activeCropIndices).filter(index => activeCropIndices[index]);
+    
+    if (activeIndices.length === 0) return;
+
+    activeIndices.forEach(index => {
+      const cropperInstance = cropperRefs.current[index]?.cropper;
+      if (cropperInstance) {
+        const canvas = cropperInstance.getCroppedCanvas();
+        if (canvas) {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const croppedUrl = URL.createObjectURL(blob);
+              setCroppedImages((prevState) => {
+                if (prevState[index]) URL.revokeObjectURL(prevState[index]);
+                return { ...prevState, [index]: croppedUrl };
+              });
+            }
+          }, "image/jpeg", 0.95);
+        }
+      }
+    });
+
+    // Close all croppers
+    setActiveCropIndices({});
+  };
+
   const loadImages = () => {
     return Promise.all(
       images.map((image, index) => {
@@ -207,6 +234,12 @@ function Project() {
         <label htmlFor="project-upload" className="upload-label">
           <span style={{marginRight: '8px'}}>📸</span> Upload Photos
         </label>
+        
+        {Object.values(activeCropIndices).some(Boolean) && (
+          <button onClick={confirmAllCrops} className="button btn-confirm-crops" title="Apply crop to all open images">
+            ✔️ Confirm All Crops
+          </button>
+        )}
       </div>
 
       <div className="controls-row desktop-actions action-buttons">
